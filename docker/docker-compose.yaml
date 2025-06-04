@@ -1,0 +1,14 @@
+volumes:
+  pgdata:
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: hideki
+      POSTGRES_PASSWORD: bc123
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql
