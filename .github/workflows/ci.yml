@@ -26,8 +26,9 @@ jobs:
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
   preview:
+    needs: [build]
     uses: ./.github/workflows/pulumi.yml
-    environment: dev
     with:
       project-id: ${{ vars.PROJECT_ID }}
+      environment: dev
     secrets: inherit
