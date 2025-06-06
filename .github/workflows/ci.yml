@@ -25,15 +25,15 @@ jobs:
       - run: npm run build --if-present
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
-  preview:
-    needs: [build]
-    uses: ./.github/workflows/pulumi.yml
-    with:
-      project-id: ${{ vars.PROJECT_ID }}
-      environment: dev
-    secrets: inherit
+  # preview:
+  #   needs: [build]
+  #   uses: ./.github/workflows/pulumi.yml
+  #   with:
+  #     project-id: ${{ vars.PROJECT_ID }}
+  #     environment: dev
+  #   secrets: inherit
   migrate:
-    needs: [preview]
+    needs: [build]
     uses: ./.github/workflows/migrate.yml
     with:
       project-id: ${{ vars.PROJECT_ID }}
