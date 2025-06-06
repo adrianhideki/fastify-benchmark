@@ -11,7 +11,7 @@ on:
       CLOUD_URL:
         required: true
       PULUMI_CONFIG_PASSPHRASE:
-        requiired: true
+        required: true
 jobs:
   preview:
     name: Preview
