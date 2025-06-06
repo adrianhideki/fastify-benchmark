@@ -1,9 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { createUserSchema } from "./schema";
-import { IController } from "../interfaces/controller";
 import { IUserService } from "../../services/interfaces/iuser-service";
 
-export class UserController implements IController {
+export class UserController {
   public constructor(private service: IUserService) {
     this.service = service;
   }
