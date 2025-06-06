@@ -5,10 +5,12 @@ on:
     branches: ["main"]
     paths:
       - "prisma/**"
+      - '.github/**'
   pull_request:
     branches: ["main"]
     paths:
       - "prisma/**"
+      - '.github/**'
 
 jobs:
   migrate:

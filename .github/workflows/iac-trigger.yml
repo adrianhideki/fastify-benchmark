@@ -5,10 +5,12 @@ on:
     branches: ["main"]
     paths:
       - "iac/**"
+      - '.github/**'
   pull_request:
     branches: ["main"]
     paths:
       - "iac/**"
+      - '.github/**'
 
 jobs:
   iac:
