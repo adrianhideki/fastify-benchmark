@@ -36,10 +36,12 @@ const networkConnector = new gcp.vpcaccess.Connector(
   { dependsOn: [subnetwork] }
 );
 
+// outbound ip to access internet
 const address = new gcp.compute.Address("test-address", {
   name: "test-outbound-static-ip-address",
 });
 
+// private ip address range to connect into a private network
 const privateIpAddress = new gcp.compute.GlobalAddress("private_ip_address", {
   name: "private-ip-address",
   purpose: "VPC_PEERING",
@@ -48,6 +50,7 @@ const privateIpAddress = new gcp.compute.GlobalAddress("private_ip_address", {
   network: network.id,
 });
 
+// allows google public internet services to connect at a private network
 const privateVpcConnection = new gcp.servicenetworking.Connection(
   "private_vpc_connection",
   {
