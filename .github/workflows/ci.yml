@@ -4,16 +4,57 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'src/**'
-      - '.github/**'
+      - "src/**"
+      - ".github/**"
   pull_request:
     branches: ["main"]
     paths:
-      - 'src/**'
-      - '.github/**'
+      - "src/**"
+      - ".github/**"
 
 jobs:
+  filter-prisma:
+    runs-on: ubuntu-latest
+    outputs:
+      prisma: ${{ steps.filter.outputs.prisma }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            prisma:
+              - 'prisma/**'
+              - '.github/workflows/migrate.yml'
+  filter-src:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'src/**'
+              - '.github/workflows/ci.yml'
+  filter-iac:
+    runs-on: ubuntu-latest
+    outputs:
+      iac: ${{ steps.filter.outputs.iac }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            iac:
+              - 'iac/**'
+              - '.github/workflows/iac.yml'
   build:
+    needs: [filter-src]
+    if: needs.filter-src.outputs.src == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -30,3 +71,17 @@ jobs:
       - run: npm run build --if-present
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
+  iac:
+    needs: [filter-iac, build]
+    if: needs.filter-iac.outputs.iac == 'true'
+    uses: ./.github/workflows/iac.yml
+    with:
+      environment: dev
+    secrets: inherit
+  migrate:
+    needs: [filter-prisma, build]
+    if: needs.filter-prisma.outputs.prisma == 'true'
+    uses: ./.github/workflows/migrate.yml
+    with:
+      environment: dev
+    secrets: inherit
