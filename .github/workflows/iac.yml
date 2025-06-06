@@ -46,7 +46,7 @@ jobs:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
         with:
           command: preview
-          stack-name: dev
+          stack-name: ${{ vars.PULUMI_STACK }}
           cloud-url: ${{ vars.CLOUD_URL }}
           work-dir: iac
 
@@ -56,6 +56,6 @@ jobs:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
         with:
           command: up
-          stack-name: dev
+          stack-name: ${{ vars.PULUMI_STACK }}
           cloud-url: ${{ vars.CLOUD_URL }}
           work-dir: iac
