@@ -1,0 +1,18 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "iac/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "iac/**"
+
+jobs:
+  iac:
+    uses: ./.github/workflows/iac.yml
+    with:
+      environment: dev
+    secrets: inherit

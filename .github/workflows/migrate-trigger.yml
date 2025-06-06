@@ -1,0 +1,18 @@
+name: Migration trigger
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "prisma/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "prisma/**"
+
+jobs:
+  migrate:
+    uses: ./.github/workflows/migrate.yml
+    with:
+      environment: dev
+    secrets: inherit
