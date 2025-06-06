@@ -7,8 +7,8 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # build:
+  #   runs-on: ubuntu-latest
     # strategy:
     #   matrix:
     #     node-version: [22.x]
