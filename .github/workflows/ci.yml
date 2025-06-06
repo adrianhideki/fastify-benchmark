@@ -23,7 +23,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build --if-present
-      - run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
+      - name: Use secret in a script
+        run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
   preview:
     uses: ./.github/workflows/pulumi.yml
     with:
