@@ -27,14 +27,14 @@ jobs:
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
   preview:
     needs: [build]
-    uses: ./.github/workflows/actions/pulumi/action.yml
+    uses: ./.github/actions/pulumi/action.yml
     with:
       project-id: ${{ vars.PROJECT_ID }}
       environment: dev
     secrets: inherit
   migrate:
     needs: [preview]
-    uses: ./.github/workflows/actions/migrate/action.yml
+    uses: ./.github/actions/migrate/action.yml
     with:
       project-id: ${{ vars.PROJECT_ID }}
       environment: dev
