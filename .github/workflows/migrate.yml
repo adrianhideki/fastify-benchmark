@@ -34,7 +34,7 @@ jobs:
       - name: Make the Cloud SQL Auth proxy executable
         run: "chmod +x cloud_sql_proxy"
 
-      - name: Start the Cloud SQL proxy
+      - name: Prints instance
         run: echo "$INSTANCE"
         env:
           INSTANCE: ${{ inputs.database-service }}

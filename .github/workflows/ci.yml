@@ -37,5 +37,5 @@ jobs:
     uses: ./.github/workflows/migrate.yml
     with:
       environment: dev
-      database-service: ${{ vars.DATABASE_NAME }}
+      database-service: test
     secrets: inherit
