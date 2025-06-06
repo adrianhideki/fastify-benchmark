@@ -10,6 +10,8 @@ on:
         required: true
       CLOUD_URL:
         required: true
+      PULUMI_CONFIG_PASSPHRASE:
+        requiired: true
 jobs:
   preview:
     name: Preview
@@ -40,6 +42,8 @@ jobs:
 
       - name: Preview infrastructure 🚀
         uses: pulumi/actions@v4
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
         with:
           command: preview
           stack-name: dev
