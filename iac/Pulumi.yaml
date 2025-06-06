@@ -1,5 +1,5 @@
-name: wave-catalog
-description: Wave Catalog API IaC
+name: test
+description: Poc IaC
 runtime:
   name: nodejs
   options:
