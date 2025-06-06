@@ -1,0 +1,44 @@
+name: Run Migration
+
+on:
+  workflow_call:
+    inputs:
+      project-id:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      database-service-name:
+        required: true
+        type: string
+    secrets:
+      GOOGLE_APPLICATION_CREDENTIALS:
+        required: true
+      DATABASE_URL:
+        required: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Authenticate with Google 🔑
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Download SQL Auth Proxy
+        run: "wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy"
+
+      - name: Make the Cloud SQL Auth proxy executable
+        run: "chmod +x cloud_sql_proxy"
+
+      - name: Start the Cloud SQL proxy
+        run: "./cloud_sql_proxy -instances=$DB_SERVICE_NAME & npx prisma migrate deploy"
+        env:
+          DB_SERVICE_NAME: ${{ inputs.database-service-name }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
