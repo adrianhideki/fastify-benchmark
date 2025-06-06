@@ -33,6 +33,7 @@ jobs:
             src:
               - 'src/**'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/docker.yml'
               - 'Dockerfile'
               - 'package*.json'
               - 'tsconfig.json'
