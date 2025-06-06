@@ -3,13 +3,10 @@ name: Run Migration
 on:
   workflow_call:
     inputs:
-      project-id:
-        required: true
-        type: string
       environment:
         required: true
         type: string
-      database-service-name:
+      database-service:
         required: true
         type: string
     secrets:
@@ -38,14 +35,14 @@ jobs:
         run: "chmod +x cloud_sql_proxy"
 
       - name: Start the Cloud SQL proxy
-        run: echo $instance
+        run: echo "$INSTANCE"
         env:
-          instance: ${{ inputs.database-service-name }}
+          INSTANCE: ${{ inputs.database-service }}
 
       - name: Start the Cloud SQL proxy
-        run: ./cloud_sql_proxy -instances=$instance & sleep 5
+        run: ./cloud_sql_proxy -instances=$INSTANCE & sleep 5
         env:
-          instance: ${{ inputs.database-service-name }}
+          INSTANCE: ${{ inputs.database-service }}
 
       - name: Run migration
         run: "npx prisma migrate deploy"
