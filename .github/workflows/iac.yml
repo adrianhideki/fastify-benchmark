@@ -1,5 +1,5 @@
 name: IaC
-description: Deploy necessary resources in GCP Cloud
+description: Deploy necessary resources in GCP Cloud using pulumi
 on:
   workflow_call:
     inputs:
