@@ -72,14 +72,14 @@ jobs:
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
   iac:
-    needs: [filter-iac, build]
+    needs: [filter-iac]
     if: needs.filter-iac.outputs.iac == 'true'
     uses: ./.github/workflows/iac.yml
     with:
       environment: dev
     secrets: inherit
   migrate:
-    needs: [filter-prisma, build]
+    needs: [filter-prisma]
     if: needs.filter-prisma.outputs.prisma == 'true'
     uses: ./.github/workflows/migrate.yml
     with:
