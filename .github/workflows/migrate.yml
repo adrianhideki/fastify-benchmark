@@ -38,7 +38,11 @@ jobs:
         run: "chmod +x cloud_sql_proxy"
 
       - name: Start the Cloud SQL proxy
-        run: "./cloud_sql_proxy -instances=$DB_SERVICE_NAME & npx prisma migrate deploy"
+        run: "./cloud_sql_proxy -instances=$DB_SERVICE_NAME"
         env:
           DB_SERVICE_NAME: ${{ inputs.database-service-name }}
+
+      - name: Run migration
+        env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: "npx prisma migrate deploy"
