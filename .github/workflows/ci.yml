@@ -75,6 +75,7 @@ jobs:
     with:
       environment: dev
       image-name: api
+    secrets: inherit
   iac:
     needs: [filter-iac]
     if: needs.filter-iac.outputs.iac == 'true'
