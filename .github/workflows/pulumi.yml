@@ -31,12 +31,7 @@ jobs:
       - name: Preview infrastructure 🚀
         uses: pulumi/actions@v4
         with:
-          command: up
-          stack-name: dev
-          cloud-url: ${{ secrets.CLOUD_URL }}
-
-      - uses: pulumi/actions@v6
-        working-directory: iac
-        with:
           command: preview
           stack-name: dev
+          cloud-url: ${{ secrets.CLOUD_URL }}
+          work-dir: iac
