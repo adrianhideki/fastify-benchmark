@@ -4,3 +4,4 @@ config:
   gcp:region: us-central1
   test:dbPassword:
     secure: v1:mqIhiJhn2zveFstx:RI9ZPZG6GYqV0o2fkt+24LLJZHQnyw==
+  test:name-prefix: test

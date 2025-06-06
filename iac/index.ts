@@ -3,19 +3,20 @@ import * as gcp from "@pulumi/gcp";
 
 const config = new pulumi.Config();
 const dbPassword = config.require("dbPassword");
+const prefix = config.require("name-prefix");
 
 // Create a VPC network to allow the machines to communicate
-const network = new gcp.compute.Network("test-vpc-network", {
+const network = new gcp.compute.Network(`${prefix}-vpc-network`, {
   autoCreateSubnetworks: false, // Create subnetworks manually
-  name: "test-network",
+  name: `${prefix}-network`,
   mtu: 1500, // or 1460, 8896
 });
 
 // Define the ip interval
 const subnetwork = new gcp.compute.Subnetwork(
-  "test-sub-network",
+  `${prefix}-sub-network`,
   {
-    name: "test-subnetwork",
+    name: `${prefix}-subnetwork`,
     ipCidrRange: "10.1.0.0/28",
     network: network.selfLink,
   },
@@ -24,9 +25,9 @@ const subnetwork = new gcp.compute.Subnetwork(
 
 // Allow serverless services to connect to resources into the VPC
 const networkConnector = new gcp.vpcaccess.Connector(
-  "test-connector",
+  `${prefix}-connector`,
   {
-    name: "test-vpc-connector",
+    name: `${prefix}-vpc-connector`,
     subnet: {
       name: subnetwork.name,
     },
@@ -37,8 +38,8 @@ const networkConnector = new gcp.vpcaccess.Connector(
 );
 
 // outbound ip to access internet
-const address = new gcp.compute.Address("test-address", {
-  name: "test-outbound-static-ip-address",
+const address = new gcp.compute.Address(`${prefix}-address`, {
+  name: `${prefix}-outbound-static-ip-address`,
 });
 
 // private ip address range to connect into a private network
@@ -62,9 +63,9 @@ const privateVpcConnection = new gcp.servicenetworking.Connection(
 
 // manage the routes
 const router = new gcp.compute.Router(
-  "test-router",
+  `${prefix}-router`,
   {
-    name: "test-router",
+    name: `${prefix}-router`,
     network: network.selfLink,
   },
   { dependsOn: [network] }
@@ -72,9 +73,9 @@ const router = new gcp.compute.Router(
 
 // allow private services to access internet in a VPC
 const routerNat = new gcp.compute.RouterNat(
-  "test-router-nat",
+  `${prefix}-router-nat`,
   {
-    name: "test-router-nat",
+    name: `${prefix}-router-nat`,
     router: router.name,
     natIpAllocateOption: "MANUAL_ONLY",
     sourceSubnetworkIpRangesToNat: "LIST_OF_SUBNETWORKS",
@@ -90,9 +91,9 @@ const routerNat = new gcp.compute.RouterNat(
 );
 
 const database = new gcp.sql.DatabaseInstance(
-  "test-database",
+  `${prefix}-database`,
   {
-    name: "test-database",
+    name: `${prefix}-database`,
     databaseVersion: "POSTGRES_15",
     region: "us-central1",
     settings: {
@@ -134,6 +135,32 @@ const database = new gcp.sql.DatabaseInstance(
     rootPassword: dbPassword,
   },
   { dependsOn: [network, subnetwork, privateVpcConnection] }
+);
+
+const artifactoryRegistry = new gcp.artifactregistry.Repository(
+  `${prefix}-registry`,
+  {
+    repositoryId: `${prefix}-repository`,
+    description: "Docker Repository",
+    format: "DOCKER",
+    cleanupPolicies: [
+      {
+        id: "delete-untagged",
+        action: "DELETE",
+        condition: {
+          tagState: "UNTAGGED",
+        },
+      },
+      {
+        id: "keep-new-untagged",
+        action: "KEEP",
+        condition: {
+          tagState: "UNTAGGED",
+          newerThan: "7d",
+        },
+      },
+    ],
+  }
 );
 
 // main.connectionName.get()
