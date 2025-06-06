@@ -40,7 +40,7 @@ jobs:
       - name: Start the Cloud SQL proxy
         env:
           DB_SERVICE_NAME: ${{ inputs.database-service-name }}
-        run: ./cloud_sql_proxy -instances=$DB_SERVICE_NAME=tcp:5432 & sleep 5
+        run: ./cloud_sql_proxy -instances="$DB_SERVICE_NAME" & sleep 5
 
       - name: Run migration
         env:
