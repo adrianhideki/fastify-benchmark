@@ -72,6 +72,9 @@ jobs:
     needs: [filter-src]
     if: needs.filter-src.outputs.src == 'true'
     uses: ./.github/workflows/docker.yml
+    with:
+      environment: dev
+      image-name: api
   iac:
     needs: [filter-iac]
     if: needs.filter-iac.outputs.iac == 'true'
