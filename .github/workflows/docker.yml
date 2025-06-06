@@ -1,0 +1,45 @@
+name: Docker image build and deploy
+description: Build and Deploy an Docker Image to GCP Artifact Registry
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image-name:
+        required: true
+        type: string
+    secrets:
+      GOOGLE_APPLICATION_CREDENTIALS:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.PROJECT_ID }}
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker $REGION-docker.pkg.dev
+        env:
+          REGION: ${{ vars.GCP_REGION }}
+      - name: Build and Push Docker image
+        run: |
+          IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$NAME_SUFIX-repository/$IMAGE_NAME-$ENVIRONMENT:latest"
+          docker build -t "$IMAGE_URI" .
+          docker push "$IMAGE_URI"
+        env:
+          REGION: ${{ vars.GCP_REGION }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          NAME_SUFIX: ${{ vars.NAME_SUFIX }}
+          IMAGE_NAME: ${{ inputs.image-name }}

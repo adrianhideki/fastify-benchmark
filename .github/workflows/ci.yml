@@ -3,14 +3,8 @@ name: Node.js CI
 on:
   push:
     branches: ["main"]
-    paths:
-      - "src/**"
-      - ".github/**"
   pull_request:
     branches: ["main"]
-    paths:
-      - "src/**"
-      - ".github/**"
 
 jobs:
   filter-prisma:
@@ -39,6 +33,9 @@ jobs:
             src:
               - 'src/**'
               - '.github/workflows/ci.yml'
+              - 'Dockerfile'
+              - 'package*.json'
+              - 'tsconfig.json'
   filter-iac:
     runs-on: ubuntu-latest
     outputs:
@@ -71,6 +68,10 @@ jobs:
       - run: npm run build --if-present
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
+  docker-build:
+    needs: [filter-src]
+    if: needs.filter-src.outputs.src == 'true'
+    uses: ./.github/workflows/docker.yml
   iac:
     needs: [filter-iac]
     if: needs.filter-iac.outputs.iac == 'true'
