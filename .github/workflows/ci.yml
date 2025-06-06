@@ -24,7 +24,7 @@ jobs:
       - run: npm run lint
       - run: npm run build --if-present
   preview:
-    uses: ./pulumi.yaml
+    uses: ./pulumi.yaml@main
     with:
       project-id: ${{ env.PROJECT_ID }}
     secrets: inherit
