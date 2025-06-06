@@ -12,3 +12,9 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql
+  api:
+    build: ..
+    environment:
+      DATABASE_URL: "postgresql://hideki:bc123@db:5432/blog?schema=public"
+    ports:
+      - 5000:8080

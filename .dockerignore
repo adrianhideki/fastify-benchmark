@@ -1,0 +1,5 @@
+./dist/*
+./node_modules/*
+.editorconfig
+eslint.config.mjs
+http.rest
