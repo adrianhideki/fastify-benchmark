@@ -1,17 +1,13 @@
-name: Pulumi
+name: IaC
+description: Deploy necessary resources in GCP Cloud
 on:
   workflow_call:
     inputs:
-      project-id:
-        required: true
-        type: string
       environment:
         required: true
         type: string
     secrets:
       GOOGLE_APPLICATION_CREDENTIALS:
-        required: true
-      CLOUD_URL:
         required: true
       PULUMI_CONFIG_PASSPHRASE:
         required: true
@@ -42,14 +38,24 @@ jobs:
       - name: Setup SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ inputs.project-id }}
+          project_id: ${{ vars.PROJECT_ID }}
 
-      - name: Preview infrastructure 🚀
+      - name: Preview infrastructure 🔎
         uses: pulumi/actions@v4
         env:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
         with:
           command: preview
           stack-name: dev
-          cloud-url: ${{ secrets.CLOUD_URL }}
+          cloud-url: ${{ vars.CLOUD_URL }}
+          work-dir: iac
+
+      - name: Up infrastructure 🚀
+        uses: pulumi/actions@v4
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+        with:
+          command: up
+          stack-name: dev
+          cloud-url: ${{ vars.CLOUD_URL }}
           work-dir: iac
