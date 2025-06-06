@@ -1,13 +1,19 @@
 name: Pulumi
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      project-id:
+        required: true
+        type: string
+    secrets:
+      GOOGLE_APPLICATION_CREDENTIALS:
+        required: true
+      CLOUD_URL:
+        required: true
 jobs:
   preview:
     name: Preview
     runs-on: ubuntu-latest
-    secrets: inherit
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -30,7 +36,7 @@ jobs:
       - name: Setup SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ inputs.project-id }}
 
       - name: Preview infrastructure 🚀
         uses: pulumi/actions@v4
