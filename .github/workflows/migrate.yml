@@ -38,11 +38,16 @@ jobs:
         run: "chmod +x cloud_sql_proxy"
 
       - name: Start the Cloud SQL proxy
+        run: echo $instance
         env:
-          DB_SERVICE_NAME: ${{ inputs.database-service-name }}
-        run: ./cloud_sql_proxy -instances="$DB_SERVICE_NAME" & sleep 5
+          instance: ${{ inputs.database-service-name }}
+
+      - name: Start the Cloud SQL proxy
+        run: ./cloud_sql_proxy -instances=$instance & sleep 5
+        env:
+          instance: ${{ inputs.database-service-name }}
 
       - name: Run migration
+        run: "npx prisma migrate deploy"
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: "npx prisma migrate deploy"
