@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pulumi/actions@v6
+        working-directory: iac
         with:
           command: preview
           stack-name: hideki/dev
-        working-directory: iac
         env:
           PULUMI_BACKEND_URL: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
