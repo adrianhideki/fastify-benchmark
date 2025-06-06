@@ -38,7 +38,7 @@ jobs:
         run: "chmod +x cloud_sql_proxy"
 
       - name: Start the Cloud SQL proxy
-        run: "./cloud_sql_proxy -instances=$DB_SERVICE_NAME & sleep 5"
+        run: "./cloud_sql_proxy -instances=$DB_SERVICE_NAME=tcp:5432 && sleep 5"
         env:
           DB_SERVICE_NAME: ${{ inputs.database-service-name }}
 

@@ -9,22 +9,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.x]
+    # strategy:
+    #   matrix:
+    #     node-version: [22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build --if-present
-      - name: Use secret in a script
-        run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
+    # steps:
+    #   - uses: actions/checkout@v4
+    #   - name: Use Node.js ${{ matrix.node-version }}
+    #     uses: actions/setup-node@v4
+    #     with:
+    #       node-version: ${{ matrix.node-version }}
+    #       cache: "npm"
+    #   - run: npm ci
+    #   - run: npm run lint
+    #   - run: npm run build --if-present
+    #   - name: Use secret in a script
+    #     run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
   # preview:
   #   needs: [build]
   #   uses: ./.github/workflows/pulumi.yml
@@ -33,7 +33,7 @@ jobs:
   #     environment: dev
   #   secrets: inherit
   migrate:
-    needs: [build]
+    # needs: [build]
     uses: ./.github/workflows/migrate.yml
     with:
       project-id: ${{ vars.PROJECT_ID }}
