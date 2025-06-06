@@ -26,5 +26,5 @@ jobs:
   preview:
     uses: ./.github/workflows/pulumi.yml
     with:
-      project-id: ${{ env.PROJECT_ID }}
+      project-id: ${{ vars.PROJECT_ID }}
     secrets: inherit
