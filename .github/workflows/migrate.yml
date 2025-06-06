@@ -6,9 +6,6 @@ on:
       environment:
         required: true
         type: string
-      database-service:
-        required: true
-        type: string
     secrets:
       GOOGLE_APPLICATION_CREDENTIALS:
         required: true
@@ -37,12 +34,12 @@ jobs:
       - name: Prints instance
         run: echo "$INSTANCE"
         env:
-          INSTANCE: ${{ inputs.database-service }}
+          INSTANCE: ${{ vars.DATABASE_NAME }}
 
       - name: Start the Cloud SQL proxy
         run: ./cloud_sql_proxy -instances=$INSTANCE & sleep 5
         env:
-          INSTANCE: ${{ inputs.database-service }}
+          INSTANCE: ${{ vars.DATABASE_NAME }}
 
       - name: Run migration
         run: "npx prisma migrate deploy"
