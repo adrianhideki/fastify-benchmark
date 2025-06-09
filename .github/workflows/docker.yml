@@ -27,6 +27,7 @@ jobs:
           filters: |
             src:
               - 'src/**'
+              - 'Dockerfile'
               - '.github/workflows/ci.yml'
               - '.github/workflows/docker.yml'
   deploy:
