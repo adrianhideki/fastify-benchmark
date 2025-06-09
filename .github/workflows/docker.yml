@@ -35,6 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Set image name
+        run: echo "IMAGE_URI=$REGION-docker.pkg.dev/$PROJECT_ID/$NAME_PREFIX-repository/$IMAGE_NAME-$ENVIRONMENT:latest" >> $GITHUB_ENV
+        env:
+          REGION: ${{ vars.GCP_REGION }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+          IMAGE_NAME: ${{ inputs.image-name }}
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Authenticate with Google Cloud
@@ -52,12 +60,10 @@ jobs:
           REGION: ${{ vars.GCP_REGION }}
       - name: Build and Push Docker image
         run: |
-          IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$NAME_PREFIX-repository/$IMAGE_NAME-$ENVIRONMENT:latest"
           docker build -t "$IMAGE_URI" .
           docker push "$IMAGE_URI"
+      - name: Update image on Cloud Run Service
+        run: |
+          gcloud run services update $NAME_PREFIX-api --image=$IMAGE_URI --port=8080
         env:
-          REGION: ${{ vars.GCP_REGION }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
-          ENVIRONMENT: ${{ inputs.environment }}
           NAME_PREFIX: ${{ vars.NAME_PREFIX }}
-          IMAGE_NAME: ${{ inputs.image-name }}
