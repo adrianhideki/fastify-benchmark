@@ -47,7 +47,7 @@ const backendApi = new gcp.cloudrunv2.Service(
           envs: [
             {
               name: "DATABASE_URL",
-              value: pulumi.interpolate`postgresql://postgresql:${encodeURIComponent(
+              value: pulumi.interpolate`postgresql://postgres:${encodeURIComponent(
                 dbPassword
               )}@${database.privateIpAddress}:5432/blog?schema=public`,
             },

@@ -1,6 +1,10 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
-import { network, address, subnetwork, privateVpcConnection } from "./network";
+import {
+  network,
+  subnetwork,
+  privateVpcConnection,
+} from "./network";
 
 const config = new pulumi.Config();
 const dbPassword = config.require("dbPassword");
@@ -19,15 +23,9 @@ const database = new gcp.sql.DatabaseInstance(
         binaryLogEnabled: false,
       },
       ipConfiguration: {
-        ipv4Enabled: true,
+        ipv4Enabled: false,
         privateNetwork: network.selfLink,
         enablePrivatePathForGoogleCloudServices: true,
-        authorizedNetworks: [
-          {
-            name: address.name,
-            value: address.address,
-          },
-        ],
       },
       databaseFlags: [
         { name: "log_temp_files", value: "0" },
