@@ -53,7 +53,7 @@ jobs:
           INSTANCE: ${{ vars.DATABASE_NAME }}
 
       - name: Start the Cloud SQL proxy
-        run: ./cloud_sql_proxy -instances=$INSTANCE & sleep 5
+        run: ./cloud_sql_proxy $INSTANCE & sleep 5
         env:
           INSTANCE: ${{ vars.DATABASE_NAME }}
 
