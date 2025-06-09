@@ -8,7 +8,10 @@ import { networkConnector } from "./network";
 const config = new pulumi.Config();
 const prefix = config.require("name-prefix");
 const dbPassword = config.require("dbPassword");
+const apiName = config.require("apiName");
 const region = gcp.config.region ?? "";
+const project = gcp.config.project ?? "";
+const stack = pulumi.getStack() ?? "";
 
 const backendApi = new gcp.cloudrunv2.Service(
   `${prefix}-cloud-run`,
@@ -36,7 +39,7 @@ const backendApi = new gcp.cloudrunv2.Service(
       ],
       containers: [
         {
-          image: "gcr.io/cloudrun/hello",
+          image: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/${apiName}-${stack}:latest`,
           resources: {
             cpuIdle: true,
             limits: {

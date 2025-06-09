@@ -3,7 +3,8 @@
     "main": "index.ts",
     "scripts": {
         "pre": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi pre",
-        "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up"
+        "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up",
+        "config": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi config"
     },
     "devDependencies": {
         "@types/node": "^18",
