@@ -42,7 +42,7 @@ jobs:
           credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Download SQL Auth Proxy
-        run: "wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy"
+        run: "wget https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.16.0/cloud-sql-proxy.linux.amd64 -O cloud_sql_proxy"
 
       - name: Make the Cloud SQL Auth proxy executable
         run: "chmod +x cloud_sql_proxy"
