@@ -28,6 +28,7 @@ jobs:
             src:
               - 'src/**'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/docker.yml'
   deploy:
     needs: [filter-src]
     if: needs.filter-src.outputs.src == 'true'
