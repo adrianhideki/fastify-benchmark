@@ -14,6 +14,7 @@ on:
 
 jobs:
   filter-migrate:
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     outputs:
       migrate: ${{ steps.filter.outputs.migrate }}

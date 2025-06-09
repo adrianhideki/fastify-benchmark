@@ -13,6 +13,7 @@ on:
         required: true
 jobs:
   filter-iac:
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     outputs:
       iac: ${{ steps.filter.outputs.iac }}
