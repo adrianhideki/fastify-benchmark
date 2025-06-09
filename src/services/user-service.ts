@@ -1,4 +1,4 @@
-import { InUser } from "../models/in-user";
+import { InUser } from "../models/user/in-user";
 import { IUserRepository } from "../repositories/interfaces/iuser-repository";
 import { IUserService } from "./interfaces/iuser-service";
 
