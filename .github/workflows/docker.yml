@@ -35,12 +35,12 @@ jobs:
           REGION: ${{ vars.GCP_REGION }}
       - name: Build and Push Docker image
         run: |
-          IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$NAME_SUFIX-repository/$IMAGE_NAME-$ENVIRONMENT:latest"
+          IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$NAME_PREFIX-repository/$IMAGE_NAME-$ENVIRONMENT:latest"
           docker build -t "$IMAGE_URI" .
           docker push "$IMAGE_URI"
         env:
           REGION: ${{ vars.GCP_REGION }}
           PROJECT_ID: ${{ vars.PROJECT_ID }}
           ENVIRONMENT: ${{ inputs.environment }}
-          NAME_SUFIX: ${{ vars.NAME_SUFIX }}
+          NAME_PREFIX: ${{ vars.NAME_PREFIX }}
           IMAGE_NAME: ${{ inputs.image-name }}

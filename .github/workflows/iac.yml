@@ -12,8 +12,8 @@ on:
       PULUMI_CONFIG_PASSPHRASE:
         required: true
 jobs:
-  preview:
-    name: Preview
+  preview-and-up:
+    name: Preview and Up resources
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:

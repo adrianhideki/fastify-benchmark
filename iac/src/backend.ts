@@ -40,6 +40,7 @@ const backendApi = new gcp.cloudrunv2.Service(
       containers: [
         {
           image: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/${apiName}-${stack}:latest`,
+          ports: { containerPort: 8080 },
           resources: {
             cpuIdle: true,
             limits: {
