@@ -4,6 +4,18 @@ import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import { database } from "./database";
 import { networkConnector } from "./network";
+import { artifactoryRegistry } from "./registry";
+
+const stack = pulumi.getStack();
+
+const backendImage = gcp.artifactregistry.getDockerImageOutput(
+  {
+    location: artifactoryRegistry.location,
+    repositoryId: artifactoryRegistry.repositoryId,
+    imageName: `api-${stack}:latest`,
+  },
+  { dependsOn: [artifactoryRegistry] }
+);
 
 const config = new pulumi.Config();
 const prefix = config.require("name-prefix");
@@ -36,7 +48,9 @@ const backendApi = new gcp.cloudrunv2.Service(
       ],
       containers: [
         {
-          image: 'gcr.io/cloudrun/hello',
+          image:
+            backendImage.apply((img) => img.selfLink) ??
+            "gcr.io/cloudrun/hello",
           resources: {
             cpuIdle: true,
             limits: {
