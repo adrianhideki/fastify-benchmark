@@ -1,6 +1,10 @@
 {
     "name": "wave-catalog",
     "main": "index.ts",
+    "scripts": {
+        "pre": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi pre",
+        "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up"
+    },
     "devDependencies": {
         "@types/node": "^18",
         "typescript": "^5.0.0"
