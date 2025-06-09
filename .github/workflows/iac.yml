@@ -12,7 +12,22 @@ on:
       PULUMI_CONFIG_PASSPHRASE:
         required: true
 jobs:
+  filter-iac:
+    runs-on: ubuntu-latest
+    outputs:
+      iac: ${{ steps.filter.outputs.iac }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            iac:
+              - 'iac/**'
+              - '.github/workflows/iac.yml'
   preview-and-up:
+    needs: [filter-iac]
+    if: needs.filter-iac.outputs.iac == 'true'
     name: Preview and Up resources
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}

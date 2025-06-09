@@ -24,22 +24,22 @@ jobs:
       - run: npm run build --if-present
       - name: Use secret in a script
         run: echo "The secret is $GOOGLE_APPLICATION_CREDENTIALS"
-  migrate:
+  iac:
     needs: [build]
+    uses: ./.github/workflows/iac.yml
+    with:
+      environment: dev
+    secrets: inherit
+  migrate:
+    needs: [iac]
     uses: ./.github/workflows/migrate.yml
     with:
       environment: dev
     secrets: inherit
   docker-build:
-    needs: [migrate]
+    needs: [iac]
     uses: ./.github/workflows/docker.yml
     with:
       environment: dev
       image-name: api
-    secrets: inherit
-  iac:
-    needs: [docker-build]
-    uses: ./.github/workflows/iac.yml
-    with:
-      environment: dev
     secrets: inherit

@@ -14,7 +14,22 @@ on:
         required: true
 
 jobs:
+  filter-src:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'src/**'
+              - '.github/workflows/ci.yml'
   deploy:
+    needs: [filter-src]
+    if: needs.filter-src.outputs.src == 'true'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:

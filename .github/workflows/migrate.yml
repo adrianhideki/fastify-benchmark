@@ -13,7 +13,22 @@ on:
         required: true
 
 jobs:
+  filter-migrate:
+    runs-on: ubuntu-latest
+    outputs:
+      migrate: ${{ steps.filter.outputs.migrate }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            migrate:
+              - 'prisma/**'
+              - '.github/workflows/migrate.yml'
   migrate:
+    needs: [filter-migrate]
+    if: needs.filter-migrate.outputs.migrate == 'true'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
