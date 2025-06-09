@@ -64,6 +64,7 @@ jobs:
           docker push "$IMAGE_URI"
       - name: Update image on Cloud Run Service
         run: |
-          gcloud run services update $NAME_PREFIX-api --image=$IMAGE_URI --port=8080
+          gcloud run services update $NAME_PREFIX-api --region=$REGION --image=$IMAGE_URI --port=8080
         env:
           NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+          REGION: ${{ vars.GCP_REGION }}
