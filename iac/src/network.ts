@@ -42,22 +42,16 @@ const address = new gcp.compute.Address(`${prefix}-address`, {
 });
 
 // private ip address range to connect into a private network
-const privateIpAddress = new gcp.compute.GlobalAddress("private_ip_address", {
-  name: "private-ip-address",
-  purpose: "VPC_PEERING",
-  addressType: "INTERNAL",
-  prefixLength: 16,
-  network: network.id,
-});
-
-// allows google public internet services to connect at a private network
-const privateVpcConnection = new gcp.servicenetworking.Connection(
-  "private_vpc_connection",
+const privateIpAddress = new gcp.compute.GlobalAddress(
+  `${prefix}_private_ip_address`,
   {
+    name: "private-ip-address",
+    purpose: "VPC_PEERING",
+    addressType: "INTERNAL",
+    prefixLength: 16,
     network: network.id,
-    service: "servicenetworking.googleapis.com",
-    reservedPeeringRanges: [privateIpAddress.name],
-  }
+  },
+  { dependsOn: [network] }
 );
 
 // manage the routes
@@ -89,4 +83,22 @@ const routerNat = new gcp.compute.RouterNat(
   { dependsOn: [router, subnetwork] }
 );
 
-export { network, subnetwork, networkConnector, routerNat, address, privateVpcConnection };
+// allows google public internet services to connect at a private network
+const privateVpcConnection = new gcp.servicenetworking.Connection(
+  `${prefix}_private_vpc_connection`,
+  {
+    network: network.id,
+    service: "servicenetworking.googleapis.com",
+    reservedPeeringRanges: [privateIpAddress.name],
+  },
+  { dependsOn: [network, router] }
+);
+
+export {
+  network,
+  subnetwork,
+  networkConnector,
+  routerNat,
+  address,
+  privateVpcConnection,
+};

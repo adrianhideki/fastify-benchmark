@@ -12,6 +12,7 @@ const database = new gcp.sql.DatabaseInstance(
     name: `${prefix}-database`,
     databaseVersion: "POSTGRES_15",
     region: "us-central1",
+    deletionProtection: false,
     settings: {
       tier: "db-f1-micro",
       backupConfiguration: {

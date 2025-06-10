@@ -2,25 +2,28 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
+import * as docker from "@pulumi/docker";
 import { database } from "./database";
 import { networkConnector } from "./network";
 import { artifactoryRegistry } from "./registry";
-
-const stack = pulumi.getStack();
-
-const backendImage = gcp.artifactregistry.getDockerImageOutput(
-  {
-    location: artifactoryRegistry.location,
-    repositoryId: artifactoryRegistry.repositoryId,
-    imageName: `api-${stack}:latest`,
-  },
-  { dependsOn: [artifactoryRegistry] }
-);
 
 const config = new pulumi.Config();
 const prefix = config.require("name-prefix");
 const dbPassword = config.require("dbPassword");
 const region = gcp.config.region ?? "";
+const project = gcp.config.project ?? "";
+const stack = pulumi.getStack();
+
+const backendImage = new docker.Image(
+  `api-${stack}`,
+  {
+    imageName: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/api-${stack}:latest`,
+    build: {
+      context: "../",
+    },
+  },
+  { dependsOn: [artifactoryRegistry] }
+);
 
 const backendApi = new gcp.cloudrunv2.Service(
   `${prefix}-cloud-run`,
@@ -48,9 +51,7 @@ const backendApi = new gcp.cloudrunv2.Service(
       ],
       containers: [
         {
-          image:
-            backendImage.apply((img) => img.selfLink) ??
-            "gcr.io/cloudrun/hello",
+          image: backendImage.imageName,
           resources: {
             cpuIdle: true,
             limits: {
@@ -79,7 +80,7 @@ const backendApi = new gcp.cloudrunv2.Service(
       },
     },
   },
-  { dependsOn: [database] }
+  { dependsOn: [database, networkConnector, backendImage] }
 );
 
 const loadBalancerIp = new gcp.compute.GlobalAddress(
