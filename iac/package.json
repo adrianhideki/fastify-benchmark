@@ -5,7 +5,7 @@
         "pre": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi pre",
         "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up",
         "config": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi config",
-        "destroy": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi destroy",
+        "destroy": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi destroy --continue-on-error",
         "stack": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi stack",
         "refresh": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi refresh",
         "cancel": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi cancel",
