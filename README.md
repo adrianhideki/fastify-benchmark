@@ -32,12 +32,14 @@ npx prisma push
 DATABASE_URL="postgresql://USER:PASS@SERVER:PORT/blog?schema=public"
 ```
 
-## Install the GCP SDK
+## Running migration
 
-Install the GCP SDK [here](https://cloud.google.com/sdk/docs/install) and run the following commands to be able to run the docker build and push to Artifact Registry:
+Download the SQL Auth Proxy and run the proxy:
 
 ```sh
-gcloud auth login
-gcloud config set project $PROJECT
-gcloud auth configure-docker $REGION-docker.pkg.dev
+wget https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.16.0/cloud-sql-proxy.linux.amd64 -O cloud_sql_proxy
+chmod +x cloud_sql_proxy
+./cloud_sql_proxy $INSTANCE -c ./credentials.json
 ```
+
+Run the migration using the address `127.0.0.1:5432` with the SQL User created at GCP SQL.

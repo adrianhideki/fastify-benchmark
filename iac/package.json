@@ -8,7 +8,8 @@
         "destroy": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi destroy",
         "stack": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi stack",
         "refresh": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi refresh",
-        "cancel": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi cancel"
+        "cancel": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi cancel",
+        "login": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi login"
     },
     "devDependencies": {
         "@types/node": "^18",
