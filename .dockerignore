@@ -5,3 +5,4 @@ eslint.config.mjs
 http.rest
 tsconfig.tsbuildinfo
 README.md
+./iac/*
