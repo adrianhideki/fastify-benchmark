@@ -20,6 +20,13 @@ const backendImage = new docker.Image(
     imageName: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/api-${stack}:latest`,
     build: {
       context: "../",
+      builderVersion: "BuilderBuildKit", // can also be set to `BuilderV1`
+      cacheFrom: {
+        images: [
+          pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/api-${stack}:latest`,
+        ],
+      },
+      platform: "linux/amd64",
     },
   },
   { dependsOn: [artifactoryRegistry] }

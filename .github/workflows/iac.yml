@@ -56,6 +56,12 @@ jobs:
         with:
           project_id: ${{ vars.PROJECT_ID }}
 
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker $REGION-docker.pkg.dev
+        env:
+          REGION: ${{ vars.GCP_REGION }}
+
       - name: Preview infrastructure 🔎
         uses: pulumi/actions@v4
         env:
