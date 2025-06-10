@@ -31,3 +31,13 @@ npx prisma push
 ```
 DATABASE_URL="postgresql://USER:PASS@SERVER:PORT/blog?schema=public"
 ```
+
+## Install the GCP SDK
+
+Install the GCP SDK [here](https://cloud.google.com/sdk/docs/install) and run the following commands to be able to run the docker build and push to Artifact Registry:
+
+```sh
+gcloud auth login
+gcloud config set project $PROJECT
+gcloud auth configure-docker $REGION-docker.pkg.dev
+```
