@@ -3,13 +3,13 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import * as docker from "@pulumi/docker";
-import { database } from "./database";
+import { sqlInstance } from "./database";
 import { networkConnector } from "./network";
 import { artifactoryRegistry } from "./registry";
+import { databaseUrlSecret, secretAccess } from "./secret";
 
 const config = new pulumi.Config();
 const prefix = config.require("name-prefix");
-const dbPassword = config.require("dbPassword");
 const region = gcp.config.region ?? "";
 const project = gcp.config.project ?? "";
 const stack = pulumi.getStack();
@@ -52,7 +52,7 @@ const backendApi = new gcp.cloudrunv2.Service(
         {
           name: "cloudsql",
           cloudSqlInstance: {
-            instances: [database.connectionName],
+            instances: [sqlInstance.connectionName],
           },
         },
       ],
@@ -69,9 +69,12 @@ const backendApi = new gcp.cloudrunv2.Service(
           envs: [
             {
               name: "DATABASE_URL",
-              value: pulumi.interpolate`postgresql://postgres:${encodeURIComponent(
-                dbPassword
-              )}@${database.privateIpAddress}:5432/blog?schema=public`,
+              valueSource: {
+                secretKeyRef: {
+                  secret: databaseUrlSecret.id,
+                  version: "latest",
+                },
+              },
             },
           ],
           livenessProbe: {
@@ -87,7 +90,7 @@ const backendApi = new gcp.cloudrunv2.Service(
       },
     },
   },
-  { dependsOn: [database, networkConnector, backendImage] }
+  { dependsOn: [sqlInstance, networkConnector, backendImage, databaseUrlSecret, secretAccess] }
 );
 
 const loadBalancerIp = new gcp.compute.GlobalAddress(

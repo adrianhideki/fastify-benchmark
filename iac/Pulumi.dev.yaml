@@ -2,7 +2,8 @@ encryptionsalt: v1:9IDj3HsCz0Q=:v1:X6wc9pDArLJHkJH9:ttssjfKxv8/4D7a7tQdr0Its/soe
 config:
   gcp:project: composed-hash-461917-u3
   gcp:region: us-central1
-  test:dbPassword:
-    secure: v1:mqIhiJhn2zveFstx:RI9ZPZG6GYqV0o2fkt+24LLJZHQnyw==
   test:name-prefix: test
   test:apiName: api
+  test:databaseName: test
+  test:databaseSchema: public
+  test:projectNumber: "518638972360"

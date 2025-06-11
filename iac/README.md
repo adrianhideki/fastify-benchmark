@@ -58,9 +58,11 @@ PULUMI_CONFIG_PASSPHRASE=pulumi_stack_password
 
 #variables
 CLOUD_URL=gs://dev-pulumi-hdk
-DATABASE_NAME=name_of_database_instance
+INSTANCE_NAME=name_of_database_instance
 GCP_REGION=gcp_region_name
 NAME_PREFIX=stack_name_prefix
 PROJECT_ID=gcp_project_id
 PULUMI_STACK=pulumi_stack_name
+DATABASE_NAME=stack_database_name
+SCHEMA_NAME=stack_database_schema_name
 ```

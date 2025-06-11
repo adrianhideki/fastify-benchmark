@@ -1,12 +1,25 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
+import * as random from "@pulumi/random";
 import { network, subnetwork, privateVpcConnection } from "./network";
 
 const config = new pulumi.Config();
-const dbPassword = config.require("dbPassword");
+const databaseName = config.require("databaseName");
 const prefix = config.require("name-prefix");
 
-const database = new gcp.sql.DatabaseInstance(
+const databasePassword = new random.RandomPassword(`${prefix}-root-password`, {
+  length: 16,
+  special: true,
+  overrideSpecial: "!#$%&*()-_=+[]{}<>:?",
+});
+
+const userPassword = new random.RandomPassword(`${prefix}-user-password`, {
+  length: 16,
+  special: true,
+  overrideSpecial: "!#$%&*()-_=+[]{}<>:?",
+});
+
+const sqlInstance = new gcp.sql.DatabaseInstance(
   `${prefix}-database`,
   {
     name: `${prefix}-database`,
@@ -43,9 +56,32 @@ const database = new gcp.sql.DatabaseInstance(
         hour: 0,
       },
     },
-    rootPassword: dbPassword,
+    rootPassword: databasePassword.result,
   },
   { dependsOn: [network, subnetwork, privateVpcConnection] }
 );
 
-export { database };
+const database = new gcp.sql.Database(
+  `${prefix}-database`,
+  {
+    name: databaseName,
+    instance: sqlInstance.name,
+  },
+  {
+    dependsOn: [sqlInstance],
+  }
+);
+
+const user = new gcp.sql.User(
+  `${prefix}-user`,
+  {
+    name: `${prefix}-user`,
+    instance: sqlInstance.name,
+    password: userPassword.result,
+  },
+  {
+    dependsOn: [sqlInstance],
+  }
+);
+
+export { sqlInstance, database, databasePassword, userPassword };

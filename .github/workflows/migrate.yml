@@ -25,6 +25,19 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
+      - id: secret
+        uses: google-github-actions/get-secretmanager-secrets@v2
+        with:
+          secrets: |
+            PASSWORD:projects/${{ vars.PROJECT_ID }}/secrets/${{ vars.NAME_PREFIX }}-sql-user-password-secret/versions/latest
+
+      - name: Encode password for DATABASE_URL
+        id: encode
+        run: |
+          echo "ENCODED_PASSWORD=$(node -p 'encodeURIComponent(process.env.PASSWORD)')" >> $GITHUB_OUTPUT
+        env:
+          PASSWORD: ${{ steps.secret.outputs.PASSWORD }}
+
       - name: Download SQL Auth Proxy
         run: "wget https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.16.0/cloud-sql-proxy.linux.amd64 -O cloud_sql_proxy"
 
@@ -34,7 +47,7 @@ jobs:
       - name: Prints instance
         run: echo "$INSTANCE"
         env:
-          INSTANCE: ${{ vars.DATABASE_NAME }}
+          INSTANCE: ${{ vars.INSTANCE_NAME }}
 
       - name: Start the Cloud SQL proxy
         run: ./cloud_sql_proxy $INSTANCE & sleep 5
@@ -44,4 +57,4 @@ jobs:
       - name: Run migration
         run: "npx prisma migrate deploy"
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: "postgresql://${{ vars.NAME_PREFIX }}-user:${{ steps.encode.outputs.ENCODED_PASSWORD }}@127.0.0.1:5432/${{ vars.DATABASE_NAME }}?schema=${{ vars.SCHEMA_NAME }}"
