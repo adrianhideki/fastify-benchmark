@@ -53,14 +53,16 @@ const sqlUserPasswordSecretVersion = new gcp.secretmanager.SecretVersion(
   }
 );
 
-const serviceAccountEmail = pulumi.interpolate`${projectNumber}-compute@developer.gserviceaccount.com`;
-
 const secretAccess = new gcp.secretmanager.SecretIamMember(
   `${prefix}-db-password-access`,
   {
+    project: gcp.config.project,
     secretId: databaseUrlSecretVersion.id,
     role: "roles/secretmanager.secretAccessor",
-    member: pulumi.interpolate`serviceAccount:${serviceAccountEmail}`,
+    member: pulumi.interpolate`serviceAccount:${projectNumber}-compute@developer.gserviceaccount.com`,
+  },
+  {
+    deleteBeforeReplace: true,
   }
 );
 
