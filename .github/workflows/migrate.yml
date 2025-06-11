@@ -52,7 +52,7 @@ jobs:
       - name: Start the Cloud SQL proxy
         run: ./cloud_sql_proxy $INSTANCE & sleep 5
         env:
-          INSTANCE: ${{ vars.DATABASE_NAME }}
+          INSTANCE: ${{ vars.INSTANCE_NAME }}
 
       - name: Run migration
         run: "npx prisma migrate deploy"
