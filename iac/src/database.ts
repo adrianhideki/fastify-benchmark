@@ -66,6 +66,7 @@ const database = new gcp.sql.Database(
   {
     name: databaseName,
     instance: sqlInstance.name,
+    deletionPolicy: "ABANDON",
   },
   {
     dependsOn: [sqlInstance],
@@ -78,6 +79,7 @@ const user = new gcp.sql.User(
     name: `${prefix}-user`,
     instance: sqlInstance.name,
     password: userPassword.result,
+    deletionPolicy: "ABANDON",
   },
   {
     dependsOn: [sqlInstance],

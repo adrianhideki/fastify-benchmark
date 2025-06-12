@@ -2,12 +2,12 @@
     "name": "wave-catalog",
     "main": "index.ts",
     "scripts": {
-        "pre": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi pre",
-        "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up",
+        "pre": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi pre --yes",
+        "up": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi up --yes",
         "config": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi config",
-        "destroy": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi destroy --continue-on-error",
+        "destroy": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi destroy --continue-on-error --yes",
         "stack": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi stack",
-        "refresh": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi refresh",
+        "refresh": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi refresh --skip-preview",
         "cancel": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi cancel",
         "login": "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json pulumi login"
     },
