@@ -2,22 +2,22 @@ name: IaC
 description: Deploy necessary resources in GCP Cloud using pulumi
 
 inputs:
-  GOOGLE_APPLICATION_CREDENTIALS:
+  google-application-credentials:
     type: string
     required: true
-  PULUMI_CONFIG_PASSPHRASE:
+  pulumi-password:
     type: string
     required: true
-  PROJECT_ID:
+  gcp-project-id:
     type: string
     required: true
-  GCP_REGION:
+  gcp-region:
     type: string
     required: true
-  PULUMI_STACK:
+  pulumi-stack:
     type: string
     required: true
-  CLOUD_URL:
+  pulumi-login-url:
     type: string
     required: true
 
@@ -41,36 +41,36 @@ runs:
     - name: Authenticate with Google 🔑
       uses: "google-github-actions/auth@v2"
       with:
-        credentials_json: ${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}
+        credentials_json: ${{ inputs.google-application-credentials }}
 
     - name: Setup SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
-        project_id: ${{ inputs.PROJECT_ID }}
+        project_id: ${{ inputs.gcp-project-id }}
 
     - name: Configure Docker to use gcloud as a credential helper
       run: |
         gcloud auth configure-docker $REGION-docker.pkg.dev
       env:
-        REGION: ${{ inputs.GCP_REGION }}
+        REGION: ${{ inputs.gcp-region }}
       shell: bash
 
     - name: Preview infrastructure 🔎
       uses: pulumi/actions@v4
       env:
-        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.PULUMI_CONFIG_PASSPHRASE }}
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-password }}
       with:
         command: preview
-        stack-name: ${{ inputs.PULUMI_STACK }}
-        cloud-url: ${{ inputs.CLOUD_URL }}
+        stack-name: ${{ inputs.pulumi-stack }}
+        cloud-url: ${{ inputs.pulumi-login-url }}
         work-dir: iac
 
     - name: Up infrastructure 🚀
       uses: pulumi/actions@v4
       env:
-        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.PULUMI_CONFIG_PASSPHRASE }}
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-password }}
       with:
         command: up
-        stack-name: ${{ inputs.PULUMI_STACK }}
-        cloud-url: ${{ inputs.CLOUD_URL }}
+        stack-name: ${{ inputs.pulumi-stack }}
+        cloud-url: ${{ inputs.pulumi-login-url }}
         work-dir: iac

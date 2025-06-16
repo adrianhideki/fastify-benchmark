@@ -2,22 +2,22 @@ name: IaC
 description: Deploy necessary resources in GCP Cloud using pulumi
 
 inputs:
-  GOOGLE_APPLICATION_CREDENTIALS:
+  google-application-credentials:
     required: true
     type: string
-  PROJECT_ID:
+  gcp-project-id:
     required: true
     type: string
-  NAME_PREFIX:
+  pulumi-stack:
     required: true
     type: string
-  INSTANCE_NAME:
+  instance-name:
     required: true
     type: string
-  DATABASE_NAME:
+  database-name:
     required: true
     type: string
-  SCHEMA_NAME:
+  schema-name:
     required: true
     type: string
 
@@ -30,13 +30,13 @@ runs:
     - name: Authenticate with Google 🔑
       uses: "google-github-actions/auth@v2"
       with:
-        credentials_json: ${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}
+        credentials_json: ${{ inputs.google-application-credentials }}
 
     - id: secret
       uses: google-github-actions/get-secretmanager-secrets@v2
       with:
         secrets: |
-          PASSWORD:projects/${{ inputs.PROJECT_ID }}/secrets/${{ inputs.NAME_PREFIX }}-sql-user-password-secret/versions/latest
+          PASSWORD:projects/${{ inputs.gcp-project-id }}/secrets/${{ inputs.pulumi-stack }}-sql-user-password-secret/versions/latest
 
     - name: Encode password for DATABASE_URL
       id: encode
@@ -58,16 +58,16 @@ runs:
       shell: bash
       run: echo "$INSTANCE"
       env:
-        INSTANCE: ${{ inputs.INSTANCE_NAME }}
+        INSTANCE: ${{ inputs.instance-name }}
 
     - name: Start the Cloud SQL proxy
       shell: bash
       run: ./cloud_sql_proxy $INSTANCE & sleep 5
       env:
-        INSTANCE: ${{ inputs.INSTANCE_NAME }}
+        INSTANCE: ${{ inputs.instance-name }}
 
     - name: Run migration
       shell: bash
       run: "npx prisma migrate deploy"
       env:
-        DATABASE_URL: "postgresql://${{ inputs.NAME_PREFIX }}-user:${{ steps.encode.outputs.ENCODED_PASSWORD }}@127.0.0.1:5432/${{ inputs.DATABASE_NAME }}?schema=${{ inputs.SCHEMA_NAME }}"
+        DATABASE_URL: "postgresql://${{ inputs.pulumi-stack }}-user:${{ steps.encode.outputs.ENCODED_PASSWORD }}@127.0.0.1:5432/${{ inputs.database-name }}?schema=${{ inputs.schema-name }}"

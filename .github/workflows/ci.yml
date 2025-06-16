@@ -27,28 +27,28 @@ jobs:
       - name: "IaC"
         uses: ./.github/actions/iac
         with:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-          PULUMI_STACK: ${{ vars.PULUMI_STACK }}
-          CLOUD_URL: ${{ vars.CLOUD_URL }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
-          GCP_REGION: ${{ vars.GCP_REGION }}
+          google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          pulumi-password: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+          pulumi-stack: ${{ vars.PULUMI_STACK }}
+          pulumi-login-url: ${{ vars.CLOUD_URL }}
+          gcp-project-id: ${{ vars.PROJECT_ID }}
+          gcp-region: ${{ vars.GCP_REGION }}
 
       - name: "migrate"
         uses: ./.github/actions/migrate
         with:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
-          NAME_PREFIX: ${{ vars.NAME_PREFIX }}
-          INSTANCE_NAME: ${{ vars.INSTANCE_NAME }}
-          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
-          SCHEMA_NAME: ${{ vars.SCHEMA_NAME }}
+          google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          gcp-project-id: ${{ vars.PROJECT_ID }}
+          pulumi-stack: ${{ vars.NAME_PREFIX }}
+          instance-name: ${{ vars.INSTANCE_NAME }}
+          database-name: ${{ vars.DATABASE_NAME }}
+          schema-name: ${{ vars.SCHEMA_NAME }}
 
       - name: "docker-build"
         uses: ./.github/actions/docker
         with:
           image-name: api
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
-          GCP_REGION: ${{ vars.GCP_REGION }}
-          NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+          google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          gcp-project-id: ${{ vars.PROJECT_ID }}
+          gcp-region: ${{ vars.GCP_REGION }}
+          pulumi-stack: ${{ vars.PULUMI_STACK }}

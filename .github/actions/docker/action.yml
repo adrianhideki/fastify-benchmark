@@ -5,16 +5,16 @@ inputs:
   image-name:
     required: true
     type: string
-  GOOGLE_APPLICATION_CREDENTIALS:
+  google-application-credentials:
     required: true
     type: string
-  PROJECT_ID:
+  gcp-project-id:
     required: true
     type: string
-  GCP_REGION:
+  gcp-region:
     required: true
     type: string
-  NAME_PREFIX:
+  pulumi-stack:
     required: true
     type: string
 
@@ -26,22 +26,22 @@ runs:
     - name: Authenticate with Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}
+        credentials_json: ${{ inputs.google-application-credentials }}
 
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
-        project_id: ${{ inputs.PROJECT_ID }}
+        project_id: ${{ inputs.gcp-project-id }}
 
     - name: Configure Docker to use gcloud as a credential helper
       run: |
-        gcloud auth configure-docker ${{ inputs.GCP_REGION }}-docker.pkg.dev
+        gcloud auth configure-docker ${{ inputs.gcp-region }}-docker.pkg.dev
       shell: bash
 
     - name: Set image name
       shell: bash
       run: |
-        echo "IMAGE_URI=${{ inputs.GCP_REGION }}-docker.pkg.dev/${{ inputs.PROJECT_ID }}/${{ inputs.NAME_PREFIX }}-repository/${{ inputs.image-name }}-${{ inputs.NAME_PREFIX }}:latest" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.gcp-region }}-docker.pkg.dev/${{ inputs.gcp-project-id }}/${{ inputs.pulumi-stack }}-repository/${{ inputs.image-name }}-${{ inputs.pulumi-stack }}:latest" >> $GITHUB_ENV
 
     - name: Build and Push Docker image
       shell: bash
@@ -52,4 +52,4 @@ runs:
     - name: Update image on Cloud Run Service
       shell: bash
       run: |
-        gcloud run services update ${{ inputs.NAME_PREFIX }}-api --region=${{ inputs.GCP_REGION }} --image=$IMAGE_URI --port=8080
+        gcloud run services update ${{ inputs.pulumi-stack }}-api --region=${{ inputs.gcp-region }} --image=$IMAGE_URI --port=8080
