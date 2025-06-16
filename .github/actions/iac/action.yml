@@ -2,9 +2,6 @@ name: IaC
 description: Deploy necessary resources in GCP Cloud using pulumi
 
 inputs:
-  environment:
-    required: true
-    type: string
   GOOGLE_APPLICATION_CREDENTIALS:
     type: string
     required: true

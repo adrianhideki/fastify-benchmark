@@ -33,7 +33,6 @@ jobs:
           CLOUD_URL: ${{ vars.CLOUD_URL }}
           PROJECT_ID: ${{ vars.PROJECT_ID }}
           GCP_REGION: ${{ vars.GCP_REGION }}
-          NAME_PREFIX: ${{ vars.NAME_PREFIX }}
 
       - name: "migrate"
         uses: ./.github/actions/migrate

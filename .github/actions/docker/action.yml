@@ -2,9 +2,6 @@ name: Docker image build and deploy
 description: Build and Deploy an Docker Image to GCP Artifact Registry
 
 inputs:
-  environment:
-    required: true
-    type: string
   image-name:
     required: true
     type: string
@@ -44,7 +41,7 @@ runs:
     - name: Set image name
       shell: bash
       run: |
-        echo "IMAGE_URI=${{ inputs.GCP_REGION }}-docker.pkg.dev/${{ inputs.PROJECT_ID }}/${{ inputs.NAME_PREFIX }}-repository/${{ inputs.image-name }}-${{ inputs.environment }}:latest" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.GCP_REGION }}-docker.pkg.dev/${{ inputs.PROJECT_ID }}/${{ inputs.NAME_PREFIX }}-repository/${{ inputs.image-name }}:latest" >> $GITHUB_ENV
 
     - name: Build and Push Docker image
       shell: bash
