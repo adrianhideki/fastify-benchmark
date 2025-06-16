@@ -1,0 +1,70 @@
+name: IaC
+description: Deploy necessary resources in GCP Cloud using pulumi
+
+inputs:
+  environment:
+    required: true
+    type: string
+  GOOGLE_APPLICATION_CREDENTIALS:
+    required: true
+    type: string
+  PROJECT_ID:
+    required: true
+    type: string
+  NAME_PREFIX:
+    required: true
+    type: string
+  INSTANCE_NAME:
+    required: true
+    type: string
+  DATABASE_NAME:
+    required: true
+    type: string
+  SCHEMA_NAME:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Authenticate with Google 🔑
+      uses: "google-github-actions/auth@v2"
+      with:
+        credentials_json: ${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}
+
+    - id: secret
+      uses: google-github-actions/get-secretmanager-secrets@v2
+      with:
+        secrets: |
+          PASSWORD:projects/${{ inputs.PROJECT_ID }}/secrets/${{ inputs.NAME_PREFIX }}-sql-user-password-secret/versions/latest
+
+    - name: Encode password for DATABASE_URL
+      id: encode
+      run: |
+        echo "ENCODED_PASSWORD=$(node -p 'encodeURIComponent(process.env.PASSWORD)')" >> $GITHUB_OUTPUT
+      env:
+        PASSWORD: ${{ steps.secret.outputs.PASSWORD }}
+
+    - name: Download SQL Auth Proxy
+      run: "wget https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.16.0/cloud-sql-proxy.linux.amd64 -O cloud_sql_proxy"
+
+    - name: Make the Cloud SQL Auth proxy executable
+      run: "chmod +x cloud_sql_proxy"
+
+    - name: Prints instance
+      run: echo "$INSTANCE"
+      env:
+        INSTANCE: ${{ inputs.INSTANCE_NAME }}
+
+    - name: Start the Cloud SQL proxy
+      run: ./cloud_sql_proxy $INSTANCE & sleep 5
+      env:
+        INSTANCE: ${{ inputs.INSTANCE_NAME }}
+
+    - name: Run migration
+      run: "npx prisma migrate deploy"
+      env:
+        DATABASE_URL: "postgresql://${{ inputs.NAME_PREFIX }}-user:${{ steps.encode.outputs.ENCODED_PASSWORD }}@127.0.0.1:5432/${{ inputs.DATABASE_NAME }}?schema=${{ inputs.SCHEMA_NAME }}"
