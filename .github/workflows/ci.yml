@@ -36,7 +36,6 @@ jobs:
       - name: "migrate"
         uses: ./.github/actions/migrate
         with:
-          environment: dev
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           PROJECT_ID: ${{ vars.PROJECT_ID }}
           NAME_PREFIX: ${{ vars.NAME_PREFIX }}
@@ -46,7 +45,6 @@ jobs:
       - name: "docker-build"
         uses: ./.github/actions/docker
         with:
-          environment: dev
           image-name: api
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           PROJECT_ID: ${{ vars.PROJECT_ID }}
