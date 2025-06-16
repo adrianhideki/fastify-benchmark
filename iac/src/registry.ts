@@ -1,13 +1,12 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 
-const config = new pulumi.Config();
-const prefix = config.require("name-prefix");
+const stack = pulumi.getStack();
 
 const artifactoryRegistry = new gcp.artifactregistry.Repository(
-  `${prefix}-registry`,
+  `${stack}-registry`,
   {
-    repositoryId: `${prefix}-repository`,
+    repositoryId: `${stack}-repository`,
     description: "Docker Repository",
     format: "DOCKER",
     cleanupPolicies: [

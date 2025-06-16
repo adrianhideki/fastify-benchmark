@@ -39,7 +39,7 @@ jobs:
         with:
           google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           gcp-project-id: ${{ vars.PROJECT_ID }}
-          pulumi-stack: ${{ vars.NAME_PREFIX }}
+          pulumi-stack: ${{ vars.PULUMI_STACK }}
           instance-name: ${{ vars.INSTANCE_NAME }}
           database-name: ${{ vars.DATABASE_NAME }}
           schema-name: ${{ vars.SCHEMA_NAME }}

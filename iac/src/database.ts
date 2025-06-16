@@ -5,24 +5,22 @@ import { network, subnetwork, privateVpcConnection } from "./network";
 
 const config = new pulumi.Config();
 const databaseName = config.require("databaseName");
-const prefix = config.require("name-prefix");
+const stack = pulumi.getStack();
 
-const databasePassword = new random.RandomPassword(`${prefix}-root-password`, {
+const databasePassword = new random.RandomPassword(`${stack}-root-password`, {
   length: 16,
-  special: true,
-  overrideSpecial: "!#$%&*()-_=+[]{}<>:?",
+  special: false,
 });
 
-const userPassword = new random.RandomPassword(`${prefix}-user-password`, {
+const userPassword = new random.RandomPassword(`${stack}-user-password`, {
   length: 16,
-  special: true,
-  overrideSpecial: "!#$%&*()-_=+[]{}<>:?",
+  special: false,
 });
 
 const sqlInstance = new gcp.sql.DatabaseInstance(
-  `${prefix}-database`,
+  `${stack}-database`,
   {
-    name: `${prefix}-database`,
+    name: `${stack}-database`,
     databaseVersion: "POSTGRES_15",
     region: "us-central1",
     deletionProtection: false,
@@ -62,7 +60,7 @@ const sqlInstance = new gcp.sql.DatabaseInstance(
 );
 
 const database = new gcp.sql.Database(
-  `${prefix}-database`,
+  `${stack}-database`,
   {
     name: databaseName,
     instance: sqlInstance.name,
@@ -74,9 +72,9 @@ const database = new gcp.sql.Database(
 );
 
 const user = new gcp.sql.User(
-  `${prefix}-user`,
+  `${stack}-user`,
   {
-    name: `${prefix}-user`,
+    name: `${stack}-user`,
     instance: sqlInstance.name,
     password: userPassword.result,
     deletionPolicy: "ABANDON",
@@ -86,4 +84,4 @@ const user = new gcp.sql.User(
   }
 );
 
-export { sqlInstance, database, databasePassword, userPassword };
+export { sqlInstance, database, databasePassword, userPassword, user };

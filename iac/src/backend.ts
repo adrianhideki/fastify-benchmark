@@ -3,13 +3,16 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import * as docker from "@pulumi/docker";
-import { sqlInstance } from "./database";
+import { database, sqlInstance, user } from "./database";
 import { networkConnector } from "./network";
 import { artifactoryRegistry } from "./registry";
-import { databaseUrlSecret, secretAccess } from "./secret";
+import {
+  databaseUrlSecret,
+  databaseUlrSecretAccess,
+  sqlUserPasswordSecretSecreteAccess,
+  sqlUserPasswordSecret,
+} from "./secret";
 
-const config = new pulumi.Config();
-const prefix = config.require("name-prefix");
 const region = gcp.config.region ?? "";
 const project = gcp.config.project ?? "";
 const stack = pulumi.getStack();
@@ -17,13 +20,13 @@ const stack = pulumi.getStack();
 const backendImage = new docker.Image(
   `api-${stack}`,
   {
-    imageName: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/api-${stack}:latest`,
+    imageName: pulumi.interpolate`${region}-docker.pkg.dev/${project}/${stack}-repository/api-${stack}:latest`,
     build: {
       context: "../",
       builderVersion: "BuilderBuildKit", // can also be set to `BuilderV1`
       cacheFrom: {
         images: [
-          pulumi.interpolate`${region}-docker.pkg.dev/${project}/${prefix}-repository/api-${stack}:latest`,
+          pulumi.interpolate`${region}-docker.pkg.dev/${project}/${stack}-repository/api-${stack}:latest`,
         ],
       },
       platform: "linux/amd64",
@@ -33,9 +36,9 @@ const backendImage = new docker.Image(
 );
 
 const backendApi = new gcp.cloudrunv2.Service(
-  `${prefix}-cloud-run`,
+  `${stack}-cloud-run`,
   {
-    name: `${prefix}-api`,
+    name: `${stack}-api`,
     location: region,
     ingress: "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER",
     invokerIamDisabled: true,
@@ -78,6 +81,7 @@ const backendApi = new gcp.cloudrunv2.Service(
             },
           ],
           livenessProbe: {
+            initialDelaySeconds: 60,
             httpGet: {
               path: "/",
             },
@@ -90,18 +94,30 @@ const backendApi = new gcp.cloudrunv2.Service(
       },
     },
   },
-  { dependsOn: [sqlInstance, networkConnector, backendImage, databaseUrlSecret, secretAccess] }
+  {
+    dependsOn: [
+      sqlInstance,
+      networkConnector,
+      backendImage,
+      databaseUrlSecret,
+      databaseUlrSecretAccess,
+      sqlUserPasswordSecretSecreteAccess,
+      database,
+      user,
+      sqlUserPasswordSecret,
+    ],
+  }
 );
 
 const loadBalancerIp = new gcp.compute.GlobalAddress(
-  `${prefix}-global-address`,
+  `${stack}-global-address`,
   {
     addressType: "EXTERNAL",
   }
 );
 
 const endpointGroup = new gcp.compute.RegionNetworkEndpointGroup(
-  `${prefix}-endpoint-group`,
+  `${stack}-endpoint-group`,
   {
     networkEndpointType: "SERVERLESS",
     region: region,
@@ -115,7 +131,7 @@ const endpointGroup = new gcp.compute.RegionNetworkEndpointGroup(
 );
 
 const backendService = new gcp.compute.BackendService(
-  `${prefix}-backend-service`,
+  `${stack}-backend-service`,
   {
     enableCdn: false,
     connectionDrainingTimeoutSec: 10,
@@ -131,12 +147,12 @@ const backendService = new gcp.compute.BackendService(
 );
 
 const urlMap = new gcp.compute.URLMap(
-  `${prefix}-url-map`,
+  `${stack}-url-map`,
   {
     defaultService: backendService.id,
     hostRules: [
       {
-        hosts: ["api-test.hydk.com.br"],
+        hosts: [`${stack}.wave.com.br`],
         pathMatcher: "all-paths",
       },
     ],
@@ -160,7 +176,7 @@ const urlMap = new gcp.compute.URLMap(
 
 // use TargetHttpsProxy to specify a certificate and SSL
 const httpProxy = new gcp.compute.TargetHttpProxy(
-  `${prefix}-http-proxy`,
+  `${stack}-http-proxy`,
   {
     urlMap: urlMap.selfLink,
   },
@@ -170,7 +186,7 @@ const httpProxy = new gcp.compute.TargetHttpProxy(
 );
 
 const loadBalance = new gcp.compute.GlobalForwardingRule(
-  `${prefix}-load-balancer`,
+  `${stack}-load-balancer`,
   {
     target: httpProxy.selfLink,
     ipAddress: loadBalancerIp.address,
