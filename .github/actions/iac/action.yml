@@ -39,11 +39,13 @@ runs:
     - name: Installing dependencies 📦️
       run: npm install
       working-directory: iac
+      shell: bash
 
     - name: Authenticate with Google 🔑
       uses: "google-github-actions/auth@v2"
       with:
         credentials_json: ${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}
+      shell: bash
 
     - name: Setup SDK
       uses: google-github-actions/setup-gcloud@v2
@@ -55,6 +57,7 @@ runs:
         gcloud auth configure-docker $REGION-docker.pkg.dev
       env:
         REGION: ${{ inputs.GCP_REGION }}
+      shell: bash
 
     - name: Preview infrastructure 🔎
       uses: pulumi/actions@v4

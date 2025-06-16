@@ -39,6 +39,7 @@ runs:
     - name: Configure Docker to use gcloud as a credential helper
       run: |
         gcloud auth configure-docker ${{ inputs.GCP_REGION }}-docker.pkg.dev
+      shell: bash
 
     - name: Set image name
       shell: bash
@@ -46,10 +47,12 @@ runs:
         echo "IMAGE_URI=${{ inputs.GCP_REGION }}-docker.pkg.dev/${{ inputs.PROJECT_ID }}/${{ inputs.NAME_PREFIX }}-repository/${{ inputs.image-name }}-${{ inputs.environment }}:latest" >> $GITHUB_ENV
 
     - name: Build and Push Docker image
+      shell: bash
       run: |
         docker build -t "$IMAGE_URI" .
         docker push "$IMAGE_URI"
 
     - name: Update image on Cloud Run Service
+      shell: bash
       run: |
         gcloud run services update ${{ inputs.NAME_PREFIX }}-api --region=${{ inputs.GCP_REGION }} --image=$IMAGE_URI --port=8080

@@ -23,6 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build --if-present
+
       - name: "IaC"
         uses: ./.github/actions/iac
         with:
@@ -33,6 +34,7 @@ jobs:
           PROJECT_ID: ${{ vars.PROJECT_ID }}
           GCP_REGION: ${{ vars.GCP_REGION }}
           NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+
       - name: "migrate"
         uses: ./.github/actions/migrate
         with:
@@ -42,6 +44,7 @@ jobs:
           INSTANCE_NAME: ${{ vars.INSTANCE_NAME }}
           DATABASE_NAME: ${{ vars.DATABASE_NAME }}
           SCHEMA_NAME: ${{ vars.SCHEMA_NAME }}
+
       - name: "docker-build"
         uses: ./.github/actions/docker
         with:
