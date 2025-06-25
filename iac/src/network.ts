@@ -14,7 +14,7 @@ const network = new gcp.compute.Network(`${stack}-vpc-network`, {
 const privateIpAddress = new gcp.compute.GlobalAddress(
   `${stack}-private-ip-address`,
   {
-    name: "private-ip-address",
+    name: `${stack}-private-ip-address`,
     purpose: "VPC_PEERING",
     addressType: "INTERNAL",
     prefixLength: 16,
@@ -31,6 +31,7 @@ const privateVpcConnection = new gcp.servicenetworking.Connection(
     service: "servicenetworking.googleapis.com",
     reservedPeeringRanges: [privateIpAddress.name],
     deletionPolicy: "ABANDON",
+    updateOnCreationFail: true,
   },
   { dependsOn: [network, privateIpAddress] }
 );
