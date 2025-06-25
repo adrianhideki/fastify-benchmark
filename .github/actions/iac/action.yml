@@ -39,7 +39,7 @@ runs:
         cache: pnpm
 
     - name: Installing dependencies 📦️
-      run: pnpm install
+      run: npm pkg delete scripts.prepare && pnpm install --frozen-lockfile
       working-directory: iac
       shell: bash
 
